@@ -3,95 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Page</title>
+    <title>Task Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style01.css">
+    <style>
+        /* CSS untuk Menyusun Konten "My Day" secara Simetris */
+        #myDayContent {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
 
-    <link rel="stylesheet" href="../assets/css/style.css">
+        .task-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px; /* Menambahkan spasi di antara elemen input */
+            width: 100%;
+            max-width: 600px;
+        }
 
+        .task-input-group input,
+        .task-input-group button {
+            flex: 1 1 45%;
+            min-width: 150px;
+        }
+
+        #my-day-task-list,
+        #important-task-list,
+        #planned-task-list,
+        #assigned-task-list,
+        #all-task-list {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        #task-input {
+            width: 100%;
+        }
+        #due-date-input, #priority-input {
+            width: 50%;
+        }
+
+        /* Optional: Styling untuk Sidebar Aktif */
+        .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .nav-link {
+            color: #0d6efd;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             
             <!-- Sidebar (kiri) -->
-            <div class="col-2 sidebar bg-light vh-100 d-flex flex-column align-items-start p-3">
-                <!-- Profile Section -->
+            <div class="col-2 sidebar bg-dark vh-100 d-flex flex-column align-items-start p-3">
                 <div class="d-flex align-items-center mb-4">
                     <img src="https://via.placeholder.com/40" alt="Profile" class="rounded-circle me-2">
                     <div>
-                        <p class="mb-0 fw-bold" id="sidebar-username">Guest</p> <!-- username default ini -->
+                        <p class="mb-0 fw-bold" id="sidebar-username">Guest</p>
                     </div>
                 </div>
                 
                 <!-- Navigation panel kiri -->
                 <ul class="nav flex-column w-100">
                     <li class="nav-item">
-                        <a href="#" class="nav-link active"><i class="fa fa-house"></i> My Day</a>
+                        <a href="#" class="nav-link active" onclick="switchContext('myDay')"><i class="fa fa-house"></i> My Day</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link" id="important-tasks-link"><i class="fa fa-star"></i> Important</a>
+                        <a href="#" class="nav-link" onclick="switchContext('important')"><i class="fa fa-star"></i> Important</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="fa fa-calendar-alt"></i> Planned</a>
+                        <a href="#" class="nav-link" onclick="switchContext('planned')"><i class="fa fa-calendar-alt"></i> Planned</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="fa fa-user-check"></i> Assigned to Me</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="fa fa-list-check"></i> Tasks</a>
+                        <a href="#" class="nav-link" onclick="switchContext('tasks')"><i class="fa fa-list-check"></i> Tasks</a>
                     </li>
                 </ul>
 
-                <div class="container d-flex justify-content-center">
+                <div class="container d-flex justify-content-center mt-auto">
                     <button id="logoutButton" class="btn btn-danger mt-3 mx-1" style="display: none;">Logout</button>
                     <button id="loginButton" class="btn btn-primary mt-3 mx-1" onclick="window.location.href='./login.html'">Login</button>
                 </div>
-
             </div>
             
             <!-- Main Content (container tengah) -->
-            <div class="col-7 main-content d-flex flex-column align-items-center justify-content-center position-relative bg-image">
-                <div class="text-left">
+            <div class="col-7 main-content d-flex flex-column align-items-center justify-content-center position-relative" id="main-content">
+                
+                <!-- Konten "My Day" -->
+                <div id="myDayContent" class="mt-4">
                     <h1>My Day</h1>
                     <p id="current-date"></p>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', (event) => {
-                            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                            const today = new Date().toLocaleDateString('en-US', options);
-                            document.getElementById('current-date').textContent = today;
-                        });
-                    </script>
+                    
+                    <!-- Konten "Add Task" -->
+                    <div class="input-group mt-4 task-input-group">
+                        <input type="text" id="task-input" class="form-control" placeholder="Enter a task">
+                        <input type="date" id="due-date-input" class="form-control">
+                        <button class="btn btn-outline-primary" id="submit-task-btn">Add Task</button>
+                        <button class="btn btn-outline-warning" id="priority-btn"><i class="fa fa-star"></i></button>
+                    </div>
+                    <ul class="list-group mt-4" id="my-day-task-list"></ul>
                 </div>
 
-                <!-- Input add task -->
-                <div class="input-group mt-4 task-input-group w-50">
-                    <input type="text" id="task-input" class="form-control" placeholder="Enter a task">
-                    <input type="date" id="due-date-input" class="form-control">
-                    <button class="btn btn-outline-primary" id="submit-task-btn">Add Task</button>
-                    <button class="btn btn-outline-warning" id="priority-btn"><i class="fa fa-star"></i></button>
+                <!-- Konten "Important" -->
+                <div id="importantContent" style="display:none;">
+                    <h1>Important Tasks</h1>
+                    <p>Tasks you've marked as important</p>
+                    <ul class="list-group mt-4" id="important-task-list"></ul>
                 </div>
 
-                <!-- Task List -->
-                <ul class="list-group mt-4 w-50" id="my-day-task-list">
-                    <!-- otomatis masuk disini -->
-                </ul>
+                <!-- Konten "Planned" -->
+                <div id="plannedContent" style="display:none;">
+                    <h1>Planned Tasks</h1>
+                    <p>Tasks that you have planned for future dates</p>
+                    <ul class="list-group mt-4" id="planned-task-list"></ul>
+                </div>
+
+
+                <!-- Konten "Tasks" -->
+                <div id="tasksContent" style="display:none;">
+                    <h1>All Tasks</h1>
+                    <p>View all your tasks</p>
+                    <ul class="list-group mt-4" id="all-task-list"></ul>
+                </div>
+
             </div>
             
-            <!-- Suggestions (Panel kiri ) -->
-            <div class="col-3 suggestions bg-light p-3 vh-100 overflow-auto">
+            <!-- Suggestions (Panel kanan) -->
+            <div class="col-3 suggestions bg-dark p-3 vh-100 overflow-auto">
                 <h5 class="mb-4">Suggestions</h5>
                 <div>
                     <h6 class="fw-bold">History Added</h6>
-                    <ul class="list-unstyled" id="suggestions-list">
-                        <!-- task otomatis disini, di ul ini -->
-                    </ul>
+                    <ul class="list-unstyled" id="suggestions-list"></ul>
                 </div>
-                <div class="completed-tasks-section">
+                <div class="completed-tasks-section mt-4">
                     <h6 class="fw-bold">Completed</h6>
-                    <ul class="list-unstyled" id="completed-tasks-list">
-                        <!-- same here -->
-                    </ul>
+                    <ul class="list-unstyled" id="completed-tasks-list"></ul>
                 </div>
             </div>
         </div>
@@ -101,5 +165,46 @@
     <script type="module" src="../assets/js/login.js"></script>
     <script type="module" src="../assets/js/task-management.js"></script>
     <script type="module" src="../assets/js/ui-management.js"></script>
+
+    <script>
+        function switchContext(context) {
+            const myDayContent = document.getElementById('myDayContent');
+            const importantContent = document.getElementById('importantContent');
+            const plannedContent = document.getElementById('plannedContent');
+            const tasksContent = document.getElementById('tasksContent');
+
+            // Sembunyikan semua konten terlebih dahulu
+            myDayContent.style.display = 'none';
+            importantContent.style.display = 'none';
+            plannedContent.style.display = 'none';
+            tasksContent.style.display = 'none';
+
+            // Hapus kelas aktif dari semua link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            // Tampilkan konten sesuai pilihan
+            if (context === 'myDay') {
+                myDayContent.style.display = 'block';
+                document.querySelector('.nav-link[onclick="switchContext(\'myDay\')"]').classList.add('active');
+            } else if (context === 'important') {
+                importantContent.style.display = 'block';
+                document.querySelector('.nav-link[onclick="switchContext(\'important\')"]').classList.add('active');
+            } else if (context === 'planned') {
+                plannedContent.style.display = 'block';
+                document.querySelector('.nav-link[onclick="switchContext(\'planned\')"]').classList.add('active');
+            } else if (context === 'tasks') {
+                tasksContent.style.display = 'block';
+                document.querySelector('.nav-link[onclick="switchContext(\'tasks\')"]').classList.add('active');
+            }
+        }
+
+        // Mengatur tanggal saat ini
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = today;
+        });
+    </script>
 </body>
 </html>
