@@ -123,19 +123,57 @@ function renderTasks() {
 }
 
 
-// Membuat Task List Item (untuk daftar umum dan suggestions)
+// Fungsi untuk membuat elemen tanggal dan waktu yang tersisa
+function createDateElement(dueDate) {
+    const dateElem = document.createElement('small');
+    dateElem.classList.add('me-3', 'text-light');
+
+    const formattedDate = dueDate ? new Date(dueDate).toLocaleDateString('id-ID', {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+    }) : "No due date";
+
+    dateElem.textContent = formattedDate;
+    return dateElem;
+}
+
+// Fungsi untuk memperbarui waktu yang tersisa
+function createTimeRemainingElement(dueDate) {
+    const timeRemainingElem = document.createElement('small');
+    timeRemainingElem.classList.add('me-3', 'text-light');
+
+    const updateTimeRemaining = () => {
+        const timeRemaining = dueDate ? calculateTimeRemaining(dueDate) : "No due date";
+        timeRemainingElem.textContent = timeRemaining;
+    };
+
+    // Perbarui waktu setiap 1 detik
+    setInterval(updateTimeRemaining, 1000);
+    
+    // Awal waktu
+    updateTimeRemaining();
+
+    return timeRemainingElem;
+}
+
+// Fungsi utama untuk membuat item daftar tugas
 function createTaskListItem(task, isSuggestion = false) {
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
     li.style.borderRadius = '20px'; // Tambahkan border radius di sini
     li.style.width = '100%';
+
+    // Membuat elemen untuk tanggal dan waktu yang tersisa
+    const dateElem = createDateElement(task.dueDate);
+    const timeRemainingElem = createTimeRemainingElement(task.dueDate);
+
     li.innerHTML = `
         <div class="d-flex align-items-center">
             <input type="checkbox" class="me-2 task-checkbox" data-id="${task.id}" ${task.isCompleted ? 'checked' : ''}>
             <span>${task.text}</span>
         </div>
         <div class="d-flex align-items-center">
-            <small class=" me-3 text-light">${task.dueDate}</small >
+            ${dateElem.outerHTML}
+            ${timeRemainingElem.outerHTML}
             <button class="btn btn-warning btn-sm important-task-btn" data-id="${task.id}">
                 <i class="fa fa-star ${task.isImportant ? 'text-warning' : 'text-muted'}"></i>
             </button>
@@ -144,8 +182,11 @@ function createTaskListItem(task, isSuggestion = false) {
             </button>
         </div>
     `;
+
     return li;
 }
+
+
 
 // Attach Checkbox Listener
 function attachCheckboxListeners(username) {
@@ -242,6 +283,26 @@ function renderCompletedTasks() {
 
     attachDeleteTaskListeners(userData.username);  // Reattach delete listeners to completed tasks
 }
+// Function to calculate and format time remaining until the due date
+function calculateTimeRemaining(dueDate) {
+    const today = new Date();
+    const due = new Date(dueDate);
+    const timeDiff = due - today; // Selisih waktu dalam milidetik
+
+    if (timeDiff > 0) {
+        // Konversi milidetik menjadi hari, jam, menit, dan detik
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+        return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    } else if (timeDiff === 0) {
+        return "Due today";
+    } else {
+        return "Overdue";
+    }
+}
 
 // Tombol Priority untuk menandai task sebagai penting saat task dibuat
 document.getElementById('priority-btn').addEventListener('click', function() {
@@ -250,3 +311,12 @@ document.getElementById('priority-btn').addEventListener('click', function() {
 
 // Cek status user dan atur tombol pada inisialisasi
 checkUserStatus();
+
+
+
+
+
+
+
+
+
