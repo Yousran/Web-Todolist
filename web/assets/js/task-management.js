@@ -67,60 +67,64 @@ document.getElementById('submit-task-btn').addEventListener('click', function ()
     }
 });
 
-// Render Tasks (hanya jika user sudah login)
 function renderTasks() {
     const userData = JSON.parse(sessionStorage.getItem('user'));
 
-    // Jika user tidak ada (guest), jangan render tasks
     if (!userData) {
         const taskContainer = document.getElementById('my-day-task-list');
-        taskContainer.innerHTML = ''; // Kosongkan daftar task
+        taskContainer.innerHTML = '';
         const importantTaskContainer = document.getElementById('important-task-list');
-        importantTaskContainer.innerHTML = ''; // Kosongkan daftar task penting
+        importantTaskContainer.innerHTML = '';
         const allTaskContainer = document.getElementById('all-task-list');
-        allTaskContainer.innerHTML = ''; // Kosongkan daftar semua task
+        allTaskContainer.innerHTML = '';
+        const plannedTaskContainer = document.getElementById('planned-task-list');
+        plannedTaskContainer.innerHTML = ''; // Kosongkan daftar planned tasks
         return;
     }
 
     const taskContainer = document.getElementById('my-day-task-list');
-    taskContainer.innerHTML = ''; 
-
+    taskContainer.innerHTML = '';
+    
     const suggestionsContainer = document.getElementById('suggestions-list');
     suggestionsContainer.innerHTML = '';
 
     const importantTaskContainer = document.getElementById('important-task-list');
-    importantTaskContainer.innerHTML = ''; // Kosongkan daftar important tasks
+    importantTaskContainer.innerHTML = '';
 
     const allTaskContainer = document.getElementById('all-task-list');
-    allTaskContainer.innerHTML = ''; // Kosongkan daftar all tasks
+    allTaskContainer.innerHTML = '';
+
+    const plannedTaskContainer = document.getElementById('planned-task-list');
+    plannedTaskContainer.innerHTML = ''; // Kosongkan daftar planned tasks
 
     let userTasks = getTasksFromStorage(userData.username);
 
     userTasks.forEach((task) => {
-        // Buat task untuk daftar "My Day"
         const li = createTaskListItem(task);
         taskContainer.appendChild(li);
-
-        // Buat task untuk daftar suggestions
         const suggestionLi = createTaskListItem(task, true);
         suggestionsContainer.appendChild(suggestionLi);
 
-        // Jika task penting, tambahkan ke daftar important
         if (task.isImportant) {
             const importantLi = createTaskListItem(task);
             importantTaskContainer.appendChild(importantLi);
         }
 
-        // Buat task untuk daftar "All Tasks"
+        if (task.dueDate) { // Cek apakah ada tanggal jatuh tempo
+            const plannedLi = createTaskListItem(task);
+            plannedTaskContainer.appendChild(plannedLi); // Tambahkan ke daftar rencana
+        }
+
         const allTaskLi = createTaskListItem(task);
         allTaskContainer.appendChild(allTaskLi);
     });
 
     attachCheckboxListeners(userData.username);
     attachDeleteTaskListeners(userData.username);
-    attachImportantTaskListeners(userData.username); // Listener untuk tombol penting
-    renderCompletedTasks();  // Re-render completed tasks
+    attachImportantTaskListeners(userData.username);
+    renderCompletedTasks();
 }
+
 
 
 // Fungsi untuk membuat elemen tanggal dan waktu yang tersisa
