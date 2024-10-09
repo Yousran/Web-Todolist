@@ -77,6 +77,8 @@ function renderTasks() {
         taskContainer.innerHTML = ''; // Kosongkan daftar task
         const importantTaskContainer = document.getElementById('important-task-list');
         importantTaskContainer.innerHTML = ''; // Kosongkan daftar task penting
+        const allTaskContainer = document.getElementById('all-task-list');
+        allTaskContainer.innerHTML = ''; // Kosongkan daftar semua task
         return;
     }
 
@@ -89,10 +91,13 @@ function renderTasks() {
     const importantTaskContainer = document.getElementById('important-task-list');
     importantTaskContainer.innerHTML = ''; // Kosongkan daftar important tasks
 
+    const allTaskContainer = document.getElementById('all-task-list');
+    allTaskContainer.innerHTML = ''; // Kosongkan daftar all tasks
+
     let userTasks = getTasksFromStorage(userData.username);
 
     userTasks.forEach((task) => {
-        // Buat task untuk daftar umum
+        // Buat task untuk daftar "My Day"
         const li = createTaskListItem(task);
         taskContainer.appendChild(li);
 
@@ -105,6 +110,10 @@ function renderTasks() {
             const importantLi = createTaskListItem(task);
             importantTaskContainer.appendChild(importantLi);
         }
+
+        // Buat task untuk daftar "All Tasks"
+        const allTaskLi = createTaskListItem(task);
+        allTaskContainer.appendChild(allTaskLi);
     });
 
     attachCheckboxListeners(userData.username);
@@ -113,17 +122,20 @@ function renderTasks() {
     renderCompletedTasks();  // Re-render completed tasks
 }
 
+
 // Membuat Task List Item (untuk daftar umum dan suggestions)
 function createTaskListItem(task, isSuggestion = false) {
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+    li.style.borderRadius = '20px'; // Tambahkan border radius di sini
+    li.style.width = '100%';
     li.innerHTML = `
         <div class="d-flex align-items-center">
             <input type="checkbox" class="me-2 task-checkbox" data-id="${task.id}" ${task.isCompleted ? 'checked' : ''}>
             <span>${task.text}</span>
         </div>
         <div class="d-flex align-items-center">
-            <small class="text-muted me-3">${task.dueDate}</small>
+            <small class=" me-3 text-light">${task.dueDate}</small >
             <button class="btn btn-warning btn-sm important-task-btn" data-id="${task.id}">
                 <i class="fa fa-star ${task.isImportant ? 'text-warning' : 'text-muted'}"></i>
             </button>
@@ -158,10 +170,29 @@ function attachDeleteTaskListeners(username) {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const taskId = parseInt(this.dataset.id);
-            let userTasks = getTasksFromStorage(username);
-            userTasks = userTasks.filter(task => task.id !== taskId); // Remove task by ID
-            saveTasksToStorage(username, userTasks);
-            renderTasks();  // Re-render the tasks in all panels
+            
+            // Tampilkan overlay dan div konfirmasi
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('confirmDeleteDiv').style.display = 'block';
+
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+            confirmDeleteBtn.onclick = function () {
+                let userTasks = getTasksFromStorage(username);
+                userTasks = userTasks.filter(task => task.id !== taskId);
+                saveTasksToStorage(username, userTasks);
+                renderTasks(); 
+                // Sembunyikan overlay dan div setelah menghapus
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('confirmDeleteDiv').style.display = 'none';
+            };
+
+            cancelDeleteBtn.onclick = function () {
+                // Sembunyikan overlay dan div jika dibatalkan
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('confirmDeleteDiv').style.display = 'none';
+            };
         });
     });
 }
