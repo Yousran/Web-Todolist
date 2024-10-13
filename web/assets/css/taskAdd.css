@@ -1,0 +1,24 @@
+.form-group {
+    padding: 10px;
+}
+
+
+[data-bs-theme="dark"] .important-checkbox {
+    font-size: 24px;
+    color: var(--bs-white);
+    cursor: pointer;
+}
+
+[data-bs-theme="light"] .important-checkbox {
+    font-size: 24px;
+    color: var(--bs-dark);
+    cursor: pointer;
+}
+
+.important-checkbox i {
+    transition: color 0.3s ease;
+}
+
+.important-checked {
+    color: var(--bs-warning);
+}

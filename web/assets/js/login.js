@@ -1,16 +1,7 @@
 import { User } from './user.js';
+import { LocalStorage } from "./local-storage.js";
 
-// sessionStorage sama localStorage itu penyimpanan di browser. jadi kalau di close browsernya hilang semua juga datanya lagi. karena tidak bisa menggunakan database atau server jadi datanya disimpan di sini.
-
-function getUsersFromStorage() {
-    const usersData = localStorage.getItem('users');
-    return usersData ? JSON.parse(usersData) : [];
-}
-
-// Fungsi untuk menyimpan data users ke localStorage
-function saveUsersToStorage(users) {
-    localStorage.setItem('users', JSON.stringify(users));
-}
+// sessionStorage sama localStorage itu penyimpanan di browser. karena tidak bisa menggunakan database atau server jadi datanya disimpan di sini.
 
 // Fungsi untuk menampilkan error message
 function showErrorMessage(message) {
@@ -29,7 +20,7 @@ document.getElementById('loginForm')?.addEventListener('submit', function(event)
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    let users = getUsersFromStorage();
+    let users = LocalStorage.getUsersFromStorage();
 
     const foundUser = users.find(user => validateLogin(username, password, user));
 
@@ -48,7 +39,7 @@ document.getElementById('registerForm')?.addEventListener('submit', function(eve
     const username = document.getElementById('newUsername').value;
     const password = document.getElementById('newPassword').value;
 
-    let users = getUsersFromStorage();
+    let users = LocalStorage.getUsersFromStorage();
 
     const userExists = users.find(user => user.username === username);
     if (userExists) {
@@ -59,9 +50,8 @@ document.getElementById('registerForm')?.addEventListener('submit', function(eve
         users.push(newUser);
 
         // Simpan user baru ke localStorage
-        saveUsersToStorage(users);
+        LocalStorage.saveUsersToStorage(users);
 
-        alert("Registration successful! Please log in.");
         window.location.href = 'login.html';
     }
 });

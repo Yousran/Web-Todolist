@@ -1,0 +1,71 @@
+body {
+    overflow-x: hidden;
+}
+[data-bs-theme="dark"] .sidebar {
+    width: 250px;
+    height: 100vh;
+    border: 1px solid var(--bs-white);
+}
+[data-bs-theme="light"] .sidebar {
+    width: 250px;
+    height: 100vh;
+    /* border: 1px solid var(--bs-dark); */
+    border: none;
+    /* background-color: var(--bs-white); */
+    background-color: #0083c5;
+}
+
+[data-bs-theme="dark"] .sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: var(--bs-gray);
+    text-decoration: none;
+    font-size: 18px;
+}
+[data-bs-theme="light"] .sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: var(--bs-white);
+    text-decoration: none;
+    font-size: 18px;
+}
+
+[data-bs-theme="dark"] .sidebar a:hover, 
+[data-bs-theme="dark"] .sidebar a.active, 
+[data-bs-theme="dark"] .sidebar a:focus {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+    transition: box-shadow 0.3s ease-in-out;
+    color: var(--bs-white);
+}
+
+[data-bs-theme="light"] .sidebar a:hover, 
+[data-bs-theme="light"] .sidebar a.active, 
+[data-bs-theme="light"] .sidebar a:focus {
+    background: linear-gradient(to right, #0083c5, #035985);
+    backdrop-filter: none;
+    color: var(--bs-white);
+}
+
+.sidebar a i {
+    margin-right: 1rem;
+    font-size: 24px;
+}
+.content {
+    padding-left: 260px;
+}
+
+#profile-section button {
+    width: 100%;
+}
+#profile-section #sidebar-username {
+    text-align: start;
+    vertical-align: middle;
+    margin: 0;
+    font-size: 20px;
+}
